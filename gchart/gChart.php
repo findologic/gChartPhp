@@ -20,7 +20,7 @@ class gChart
      * @var string
      * @usedby getUrl()
      */
-    private $baseUrl = "chart.apis.google.com/chart?";
+    private $baseUrl = "image-charts.com/chart?";
 
     /**
      * @brief Data set values.
@@ -108,10 +108,13 @@ class gChart
         {
             $data = $this->extendedEncodeData($data);
             $separator = '';
-        } else if ($encodigData == 't')
-        {
-            $data = $this->textEncodeData($data);
-        }
+        } 
+
+        /*
+         * image-charts.com needs the real value of data, not like Google that wants value 1-100.
+         * There is no need to use textEncodeData() anymore.
+        */
+
         $retStr = $this->separateData($data, $separator, "|");
         $retStr = trim($retStr, "|");
         return $retStr;
@@ -176,6 +179,7 @@ class gChart
         }
         $encodedData = array();
         $max = utility::getMaxOfArray($data);
+
         if ($max > 100)
         {
             $rate = $max / 100;
@@ -269,7 +273,7 @@ class gChart
      */
     public function addAxisStyle($axisIndex, $axisStyle)
     {
-        $this->setProperty('chxs', $axisIndex.','.$this->encodeData($axisStyle, '|'), true);
+        $this->setProperty('chxs', $axisIndex.$this->encodeData($axisStyle, '|'), true);
     }
     /**
      * @brief Specifies the style of an axis.
@@ -585,9 +589,9 @@ class gChart
      * @param $startVal Integer A number, definig the low value for the data set. Usually, it is the same as $startVal in addAxisRange
      * @param $endVal Integer A number, definig the high value for the data set. Usually, it is the same as $endVal in addAxisRange
      */
-    public function setDataRange($startVal, $endVal)
+    public function setDataRange($value)
     {
-        $this->setProperty('chds', $startVal.','.$endVal);
+        $this->setProperty('chds', $value);
     }
     /**
      * @brief Adds the background fill
@@ -708,7 +712,7 @@ class gChart
      */
     public function getUrl()
     {
-        $fullUrl = "http://";
+        $fullUrl = "https://";
         if(isset($this->serverNum))
             $fullUrl .= $this->getServerNumber().".";
         $fullUrl .= $this->baseUrl;
