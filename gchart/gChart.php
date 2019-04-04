@@ -108,7 +108,7 @@ class gChart
     {
         $this->secretKey = $secretKey;
     }
-    
+
     public function getSecretKey()
     {
         return $this->secretKey;
@@ -137,7 +137,7 @@ class gChart
         {
             $data = $this->extendedEncodeData($data);
             $separator = '';
-        } 
+        }
 
         /*
          * image-charts.com needs the real value of data, not like Google that wants value 1-100.
@@ -290,14 +290,14 @@ class gChart
      * @brief Specifies the style of an axis.
      *
      * @param $axisIndex Integer This is a zero-based index into the axis array specified by setVisibleAxes
-     * @param $axisStyle String You can specify the font size, color, and alignment for axis labels, both custom labels and 
-     *                   default label values. All labels on the same axis have the same format. If you have multiple 
-     *                   copies of an axis, you can format each one differently. You can also specify the format of a 
+     * @param $axisStyle String You can specify the font size, color, and alignment for axis labels, both custom labels and
+     *                   default label values. All labels on the same axis have the same format. If you have multiple
+     *                   copies of an axis, you can format each one differently. You can also specify the format of a
      *                   label string, for example to show currency symbols or trailing zeroes.
-     *                   By default, the top and bottom axes do not show tick marks by the values, while the left and 
+     *                   By default, the top and bottom axes do not show tick marks by the values, while the left and
      *                   right axes do show them.
      *
-     *                   Refer to official documentation at: 
+     *                   Refer to official documentation at:
      *                   http://code.google.com/apis/chart/image/docs/gallery/bar_charts.html#axis_labels
      */
     public function addAxisStyle($axisIndex, $axisStyle)
@@ -308,24 +308,24 @@ class gChart
      * @brief Specifies the style of an axis.
      *
      * @param $axisIndex Integer This is a zero-based index into the axis array specified by setVisibleAxes
-     * @param $axisTickLength Integer You can specify long tick marks for specific axes. Typically this is 
-     *                        used to extend a tick mark across the length of a chart. Use the addAxisStyle() 
+     * @param $axisTickLength Integer You can specify long tick marks for specific axes. Typically this is
+     *                        used to extend a tick mark across the length of a chart. Use the addAxisStyle()
      *                        method to change the tick mark color.
      *
-     *                        Refer to official documentation at: 
+     *                        Refer to official documentation at:
      *                        http://code.google.com/apis/chart/image/docs/gallery/bar_charts.html#axis_labels
      */
     public function addAxisTickMarkStyle($axisIndex, $axisTickLength)
     {
         $this->setProperty('chxtc', $axisIndex.','.$this->encodeData($axisTickLength, '|'), true);
     }
-     /* 
-     * Extended Text.
-     *
-     * This specifies integer values from 0-4095, inclusive, encoded by two alphanumeric characters.
-     *
-     * @todo Add support for missing values
-     */
+    /*
+    * Extended Text.
+    *
+    * This specifies integer values from 0-4095, inclusive, encoded by two alphanumeric characters.
+    *
+    * @todo Add support for missing values
+    */
     private function extendedEncodeData($data)
     {
         $encode_string='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.';
@@ -443,14 +443,14 @@ class gChart
             $this->chart[$key] = $value;
         }
     }
-	/**
-	 * @brief Gets a chart property
-	 * @param $key String Name of the chart parameter
-	 */
-	public function getProperty($key) {
-		if (isset($this->chart[$key]))
-			return ($this->chart[$key]);
-	}
+    /**
+     * @brief Gets a chart property
+     * @param $key String Name of the chart parameter
+     */
+    public function getProperty($key) {
+        if (isset($this->chart[$key]))
+            return ($this->chart[$key]);
+    }
     /**
      * @brief Sets chart dimensions.
      *
@@ -765,7 +765,7 @@ class gChart
      * @brief The URL will be signed for enterprise version of image-charts
      * @param $url String The url to which the signiture will be appended.
      * @return string Url with signiture in query parameter.
-    */
+     */
     private function setSigniture($url){
 
         if( !$this->getAccountID()|| !$this->getSecretKey() ){
@@ -800,20 +800,20 @@ class gChart
      *                   renderer will use the standard url request. By default, the renderer will use
      *                   the url request.
      */
-	public function renderImage($post = false) {
-		header('Content-type: image/png');
-		if ($post) {
-			$this->setDataSetString();
-			$url = 'http://chart.apis.google.com/chart?chid=' . md5(uniqid(rand(), true));
-			$context = stream_context_create(
-				array('http' => array(
-					'method' => 'POST',
-					'header' => 'Content-type: application/x-www-form-urlencoded' . "\r\n",
-					'content' => urldecode(http_build_query($this->chart, '', '&')))));
-				fpassthru(fopen($url, 'r', false, $context));
-		} else {
-			$url = str_replace('&amp;', '&', $this->getUrl());
-			readfile($url);
-		}
-	}
+    public function renderImage($post = false) {
+        header('Content-type: image/png');
+        if ($post) {
+            $this->setDataSetString();
+            $url = 'http://chart.apis.google.com/chart?chid=' . md5(uniqid(rand(), true));
+            $context = stream_context_create(
+                array('http' => array(
+                    'method' => 'POST',
+                    'header' => 'Content-type: application/x-www-form-urlencoded' . "\r\n",
+                    'content' => urldecode(http_build_query($this->chart, '', '&')))));
+            fpassthru(fopen($url, 'r', false, $context));
+        } else {
+            $url = str_replace('&amp;', '&', $this->getUrl());
+            readfile($url);
+        }
+    }
 }
