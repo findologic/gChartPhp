@@ -86,6 +86,35 @@ class gChart
     }
 
     /**
+     * @brief Account ID for enterprise version.
+     */
+    private $accountID;
+    public function setAccountID($accountID)
+    {
+        $this->accountID = $accountID;
+        $this->setProperty('icac', $accountID);
+    }
+
+    public function getAccountID()
+    {
+        return $this->accountID;
+    }
+
+    /**
+     * @brief Secret Key for enterprise version.
+     */
+    private $secretKey;
+    public function setSecretKey($secretKey)
+    {
+        $this->secretKey = $secretKey;
+    }
+    
+    public function getSecretKey()
+    {
+        return $this->secretKey;
+    }
+
+    /**
      * @brief Data encoding char
      * @var char
      */
@@ -722,7 +751,31 @@ class gChart
         {
             $parms[] = $key.'='.$value;
         }
-        return $fullUrl.implode('&amp;', $parms);
+
+        $fullUrl = $fullUrl.implode('&amp;', $parms);
+
+        if( $this->getAccountID() || $this->getSecretKey() ){
+            $fullUrl = $this->setSigniture($fullUrl);
+        }
+
+        return $fullUrl;
+    }
+
+    /**
+     * @brief The URL will be signed for enterprise version of image-charts
+     * @param $url String The url to which the signiture will be appended.
+     * @return string Url with signiture in query parameter.
+    */
+    private function setSigniture($url){
+
+        if( !$this->getAccountID()|| !$this->getSecretKey() ){
+            throw new \Exception('Account ID and Secret Key are required for enterprise version');
+        }
+
+        $rawQuerystring = http_build_query($this->chart );
+        $signature = hash_hmac('sha256', $rawQuerystring,  $this->getSecretKey() );
+
+        return $url.'&ichm=' . $signature;
     }
 
     /**
