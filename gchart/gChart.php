@@ -774,8 +774,8 @@ class gChart
             throw new \Exception('Account ID and Secret Key are required for enterprise version');
         }
 
-        $rawQuerystring = http_build_query($this->chart );
-        $signature = hash_hmac('sha256', $rawQuerystring,  $this->getSecretKey() );
+        $rawQuerystring = http_build_query($this->chart);
+        $signature = hash_hmac('sha256', $rawQuerystring,  $this->getSecretKey());
 
         return $url.'&ichm=' . $signature;
     }
