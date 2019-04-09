@@ -757,7 +757,7 @@ class gChart
         $fullUrl = $fullUrl.implode('&amp;', $parms);
 
         if ($this->getAccountID() || $this->getSecretKey()) {
-            $fullUrl = $this->setSigniture($fullUrl);
+            $fullUrl = $this->setSignature($fullUrl);
         }
 
         return $fullUrl;
@@ -765,10 +765,10 @@ class gChart
 
     /**
      * @brief The URL will be signed for enterprise version of image-charts
-     * @param $url String The url to which the signiture will be appended.
-     * @return string Url with signiture in query parameter.
+     * @param $url String The url to which the signature will be appended.
+     * @return string Url with signature in query parameter.
      */
-    private function setSigniture($url){
+    private function setSignature($url){
 
         if (!$this->getAccountID() || !$this->getSecretKey()) {
             throw new \Exception('Account ID and Secret Key are required for enterprise version');
@@ -777,7 +777,7 @@ class gChart
         $rawQuerystring = http_build_query($this->chart);
         $signature = hash_hmac('sha256', $rawQuerystring,  $this->getSecretKey());
 
-        return $url.'&ichm=' . $signature;
+        return $url . '&ichm=' . $signature;
     }
 
     /**
