@@ -88,11 +88,13 @@ class gChart
     /**
      * @brief Account ID for enterprise version.
      */
-    private $accountID;
+    private $accountID = '';
     public function setAccountID($accountID)
     {
-        $this->accountID = $accountID;
-        $this->setProperty('icac', $accountID);
+        if(!empty($accountID)) {
+            $this->accountID = $accountID;
+            $this->setProperty('icac', $accountID);
+        }
     }
 
     public function getAccountID()
@@ -103,7 +105,7 @@ class gChart
     /**
      * @brief Secret Key for enterprise version.
      */
-    private $secretKey;
+    private $secretKey = '';
     public function setSecretKey($secretKey)
     {
         $this->secretKey = $secretKey;
@@ -139,9 +141,11 @@ class gChart
             $separator = '';
         }
 
-        // image-charts.com needs the real value of data, not like Google that wants value 1-100.
-        // There is no need to use textEncodeData() anymore.
-        
+        /*
+         * image-charts.com needs the real value of data, not like Google that wants value 1-100.
+         * There is no need to use textEncodeData() anymore.
+        */
+
         $retStr = $this->separateData($data, $separator, "|");
         $retStr = trim($retStr, "|");
         return $retStr;
@@ -608,8 +612,13 @@ class gChart
         $this->setProperty('chxp', $axisIndex.','.$this->encodeData($labelPositions, ','), true);
     }
     /**
-     * @brief Set data scaling.
-     * @param $value String A number, see the data format documentation section for the possible chds values.
+     * @brief Specifies the data range.
+     *
+     * Note that this does not change the axis range; to change the axis range, you must
+     * use the setAxisRange function.
+     *
+     * @param $startVal Integer A number, definig the low value for the data set. Usually, it is the same as $startVal in addAxisRange
+     * @param $endVal Integer A number, definig the high value for the data set. Usually, it is the same as $endVal in addAxisRange
      */
     public function setDataRange($value)
     {
@@ -747,7 +756,7 @@ class gChart
 
         $fullUrl = $fullUrl.implode('&amp;', $parms);
 
-        if( $this->getAccountID() || $this->getSecretKey() ){
+        if ($this->getAccountID() || $this->getSecretKey()) {
             $fullUrl = $this->setSigniture($fullUrl);
         }
 
@@ -761,14 +770,14 @@ class gChart
      */
     private function setSigniture($url){
 
-        if(!$this->getAccountID() || !$this->getSecretKey()){
+        if (!$this->getAccountID() || !$this->getSecretKey()) {
             throw new \Exception('Account ID and Secret Key are required for enterprise version');
         }
 
-        $rawQuerystring = http_build_query($this->chart);
-        $signature = hash_hmac('sha256', $rawQuerystring, $this->getSecretKey());
+        $rawQuerystring = http_build_query($this->chart );
+        $signature = hash_hmac('sha256', $rawQuerystring,  $this->getSecretKey() );
 
-        return $url . '&ichm=' . $signature;
+        return $url.'&ichm=' . $signature;
     }
 
     /**
