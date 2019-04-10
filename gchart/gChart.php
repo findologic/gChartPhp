@@ -744,20 +744,18 @@ class gChart
     public function getUrl()
     {
         $fullUrl = "https://";
-        if(isset($this->serverNum))
-            $fullUrl .= $this->getServerNumber().".";
-        $fullUrl .= $this->baseUrl;
-        $this->setDataSetString();
-        $parms = array();
-        foreach ($this->chart as $key => $value)
-        {
-            $parms[] = $key.'='.$value;
+        if (isset($this->serverNum)) {
+            $fullUrl .= $this->getServerNumber() . ".";
         }
 
-        $fullUrl = $fullUrl.implode('&amp;', $parms);
+        $fullUrl .= $this->baseUrl;
+        $this->setDataSetString();
+
+        $rawQuerystring = http_build_query($this->chart);
+        $fullUrl = $fullUrl . $rawQuerystring;
 
         if ($this->getAccountID() || $this->getSecretKey()) {
-            $fullUrl = $this->setSignature($fullUrl);
+            $fullUrl = $this->setSignature($fullUrl, $rawQuerystring);
         }
 
         return $fullUrl;
@@ -768,13 +766,12 @@ class gChart
      * @param $url String The url to which the signature will be appended.
      * @return string Url with signature in query parameter.
      */
-    private function setSignature($url){
+    private function setSignature($url, $rawQuerystring ){
 
         if (!$this->getAccountID() || !$this->getSecretKey()) {
             throw new \Exception('Account ID and Secret Key are required for enterprise version');
         }
 
-        $rawQuerystring = http_build_query($this->chart);
         $signature = hash_hmac('sha256', $rawQuerystring,  $this->getSecretKey());
 
         return $url . '&ichm=' . $signature;
@@ -818,4 +815,5 @@ class gChart
             readfile($url);
         }
     }
+    
 }
