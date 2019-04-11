@@ -117,6 +117,21 @@ class gChart
     }
 
     /**
+     * @brief Locale for enterprise version.
+     */
+    private $locale = '';
+    public function setLocale($locale)
+    {
+        $this->locale = $locale;
+        $this->setProperty('iclocale', $locale);
+    }
+
+    public function getLocale()
+    {
+        return $this->locale;
+    }
+
+    /**
      * @brief Data encoding char
      * @var char
      */
